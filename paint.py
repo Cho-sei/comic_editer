@@ -13,6 +13,8 @@ class MainFrame(wx.Frame):
 		self.Bind(wx.EVT_MOTION, self.OnMotion)
 
 		self.drag_flag = False
+		self.spos = wx.Point(0, 0)
+		self.ppos = wx.Point(0, 0)
 
 	def OnLeftDown(self, event):
 		self.spos = event.GetPosition()
@@ -23,12 +25,14 @@ class MainFrame(wx.Frame):
 
 	def OnMotion(self, event):
 		self.ppos = event.GetPosition()
+		self.Refresh(False)
 
 	def OnPaint(self, event):
 		dc = wx.PaintDC(self)
 		if self.drag_flag:
 			dc.DrawLine(self.spos[0], self.spos[1], self.ppos[0], self.ppos[1])
-		self.Refresh(False)
+		self.spos = self.ppos
+	
 
 if __name__ == '__main__':
 	app = wx.App()
