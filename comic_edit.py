@@ -77,12 +77,12 @@ class EditTab(wx.Panel):
 
 		self.SetBackgroundColour('white')
 
-		return_button = setting_button("return", self)
+		undo_button = setting_button("undo", self)
 		redo_button = setting_button("redo", self)
 		pen_button = setting_button("pen", self)
 		beta_button = setting_button("beta", self)
 
-		button_list = [return_button, redo_button, pen_button, beta_button]
+		button_list = [undo_button, redo_button, pen_button, beta_button]
 
 		self.SetSizer(button_layout(button_list))
 
