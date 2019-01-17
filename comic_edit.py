@@ -1,4 +1,11 @@
 import wx
+import paint
+
+"""
+<memo>
+アイコンの背景色：#FFF79D
+
+"""
 
 # アイコンのサイズ一括操作
 ICON_SIZE = 50
@@ -81,8 +88,11 @@ class EditTab(wx.Panel):
 		redo_button = setting_button("redo", self)
 		pen_button = setting_button("pen", self)
 		beta_button = setting_button("beta", self)
+		line_button = setting_button("line", self)
+		erase_button = setting_button("erase", self)
 
-		button_list = [undo_button, redo_button, pen_button, beta_button]
+		button_list = [undo_button, redo_button, pen_button, beta_button,
+			line_button, erase_button]
 
 		self.SetSizer(button_layout(button_list))
 
@@ -92,7 +102,48 @@ class EditerPanel(wx.Panel):
 	def __init__(self, parent):
 		super().__init__(parent, wx.ID_ANY)
 
-		self.SetBackgroundColour('gray')
+		slider = wx.Slider(self, style=wx.SL_HORIZONTAL, maxValue=50)
+
+		sizer = wx.BoxSizer(wx.HORIZONTAL)
+		sizer.Add(slider)
+		self.SetSizer(sizer)
+
+		self.pen_width = 1
+		slider.SetValue(1)
+
+		slider.Bind(wx.EVT_SLIDER, self.OnSlide)
+
+		self.Bind(wx.EVT_PAINT, self.OnPaint)
+		self.Bind(wx.EVT_LEFT_DOWN, self.OnLeftDown)
+		self.Bind(wx.EVT_LEFT_UP, self.OnLeftUp)
+		self.Bind(wx.EVT_MOTION, self.OnMotion)
+
+		self.drag_flag = False
+		self.spos = wx.Point(0, 0)
+		self.ppos = wx.Point(0, 0)
+
+	def OnLeftDown(self, event):
+		self.spos = event.GetPosition()
+		self.drag_flag = True
+
+	def OnLeftUp(self, event):
+		self.drag_flag = False
+
+	def OnMotion(self, event):
+		self.ppos = event.GetPosition()
+		self.Refresh(False)
+
+	def OnPaint(self, event):
+		dc = wx.PaintDC(self)
+		dc.SetPen(wx.Pen('black', self.pen_width))
+		if self.drag_flag:
+			dc.DrawLine(self.spos[0], self.spos[1], self.ppos[0], self.ppos[1])
+		self.spos = self.ppos
+	
+	def OnSlide(self, event):
+		width = event.GetEventObject()
+		self.pen_width = int(width.GetValue())
+
 
 
 if __name__ == '__main__':

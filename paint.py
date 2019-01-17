@@ -1,11 +1,18 @@
 import wx
 
-
-class MainFrame(wx.Frame):
+class Paint:
 	def __init__(self):
-		super().__init__(None, wx.ID_ANY, 'test', size=(300,300))
 
-		self.SetBackgroundColour('white')
+		slider = wx.Slider(self, style=wx.SL_HORIZONTAL, maxValue=50)
+
+		sizer = wx.BoxSizer(wx.HORIZONTAL)
+		sizer.Add(slider)
+		self.SetSizer(sizer)
+
+		self.pen_width = 1
+		slider.SetValue(1)
+
+		slider.Bind(wx.EVT_SLIDER, self.OnSlide)
 
 		self.Bind(wx.EVT_PAINT, self.OnPaint)
 		self.Bind(wx.EVT_LEFT_DOWN, self.OnLeftDown)
@@ -29,17 +36,12 @@ class MainFrame(wx.Frame):
 
 	def OnPaint(self, event):
 		dc = wx.PaintDC(self)
+		dc.SetPen(wx.Pen('black', self.pen_width))
 		if self.drag_flag:
 			dc.DrawLine(self.spos[0], self.spos[1], self.ppos[0], self.ppos[1])
 		self.spos = self.ppos
 	
-
-if __name__ == '__main__':
-	app = wx.App()
-
-	frame = MainFrame()
-
-	frame.Show()
-	frame.Centre()
-
-	app.MainLoop()
+	def OnSlide(self, event):
+		choice = event.GetEventObject()
+		self.pen_width = int(choice.GetValue())
+		print(choice.GetValue())
